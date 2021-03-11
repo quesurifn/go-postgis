@@ -2,8 +2,14 @@ package postgis
 
 import (
 	"bytes"
+	"context"
 	"database/sql/driver"
 	"encoding/binary"
+	"fmt"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
 )
 
 // Structs respresenting varying types of points
@@ -297,4 +303,27 @@ func (p PointZMS) Write(buffer *bytes.Buffer) error {
 
 func (p PointZMS) GetType() uint32 {
 	return 0xE0000001
+}
+
+func (p PointS) GormDataType() string {
+	return "GEOMETRY(Point, 26910)"
+}
+
+func (p PointS) GormDBDataType(db *gorm.DB, field *schema.Field) string {
+	// use field.Tag, field.TagSettings gets field's tags
+	// checkout https://github.com/go-gorm/gorm/blob/master/schema/field.go for all options
+
+	// returns different database type based on driver name
+	switch db.Dialector.Name() {
+	case "postgres":
+		return "JSONB"
+	}
+	return "GEOMETRY(Point, 26910)"
+}
+
+func (p PointS) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
+	return clause.Expr{
+		SQL:  "ST_GeomFromText(?)",
+		Vars: []interface{}{fmt.Sprintf("ST_GeomFromText('POINT(%d %d)', %d)", p.X, p.Y, p.SRID)},
+	}
 }
