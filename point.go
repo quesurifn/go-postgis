@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
 )
 
 // Structs respresenting varying types of points
@@ -304,8 +305,12 @@ func (p PointZMS) GetType() uint32 {
 	return 0xE0000001
 }
 
+func (p PointS) GormDBDataType(*gorm.DB, *schema.Field) string {
+	return "GEOMETRY(Point, 26910)"
+}
+
 func (p PointS) GormDataType() string {
-	return "geometry"
+	return "GEOMETRY(Point, 26910)"
 }
 
 func (p PointS) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
