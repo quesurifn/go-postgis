@@ -305,7 +305,7 @@ func (p PointZMS) GetType() uint32 {
 }
 
 func (p PointS) GormDataType() string {
-	return "GEOMETRY(Point, 26910),"
+	return "GEOMETRY(Point, 26910)"
 }
 
 func (p PointS) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
