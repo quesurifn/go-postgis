@@ -2,4 +2,7 @@ module github.com/quesurifn/go-postgis
 
 go 1.15
 
-require gorm.io/gorm v1.21.3
+require (
+	github.com/lib/pq v1.10.0
+	gorm.io/gorm v1.21.3
+)

@@ -9,7 +9,6 @@ import (
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"gorm.io/gorm/schema"
 )
 
 // Structs respresenting varying types of points
@@ -309,18 +308,7 @@ func (p PointS) GormDataType() string {
 	return "GEOMETRY(Point, 26910)"
 }
 
-func (p PointS) GormDBDataType(db *gorm.DB, field *schema.Field) string {
-	// use field.Tag, field.TagSettings gets field's tags
-	// checkout https://github.com/go-gorm/gorm/blob/master/schema/field.go for all options
-
-	// returns different database type based on driver name
-	switch db.Dialector.Name() {
-	case "postgres":
-		return "JSONB"
-	}
-	return "GEOMETRY(Point, 26910)"
-}
-
+// GormValue ...
 func (p PointS) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
 	return clause.Expr{
 		SQL:  "ST_GeomFromText(?)",
